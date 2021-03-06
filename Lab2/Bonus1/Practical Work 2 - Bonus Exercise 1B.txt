@@ -1,0 +1,65 @@
+Practical Work 2 - Bonus Exercise 1B
+
+def stronglyConnected(graph):
+    allComps = []
+    visV=[]
+    bigStacc=[]
+    for p in graph.parseKeys():
+        if p not in visV:
+            visV.append(p)
+            compF=dfsF(graph, p,bigStacc)
+            for i in compF:
+                visV.append(i)
+    visV=[]
+    while bigStacc:
+        p=bigStacc.pop()
+        if p not in visV:
+            compB = dfsB(graph, p, visV)
+            allComps.append(compB)
+            for q in compB.parseKeys():
+                visV.append(q)
+                for v in compB.parseKeys():
+                    if graph.isEdge(q,v):
+                        compB.addEdge(q,v,graph.retdCosts(q, v))
+    return allComps
+
+def dfsF(graph,start,bigStacc):
+    comp=[]
+    stack=[start]
+    vis=[start]
+    while stack:
+        v=stack[-1]
+        neigh=graph.retdOut(v)
+        done=True
+        for p in neigh:
+            if p not in vis:
+                stack.append(p)
+                vis.append(p)
+                done=False
+                break
+        if done:
+            if v not in bigStacc:
+                bigStacc.append(v)
+            del stack[-1]
+    return vis
+
+def dfsB(graph,start,visV):
+    comp=DoubleListGraph(0)
+    stack=[start]
+    while stack:
+        v=stack[-1]
+        visV.append(v)
+        neigh=graph.retdIn(v)
+        done=True
+        for p in neigh:
+            if p not in visV:
+                stack.append(p)
+                done=False
+                break
+        if done:
+            try:
+                comp.addVertex(v)
+            except:
+                pass
+            del stack[-1]
+    return comp

@@ -1,0 +1,47 @@
+Practical Work 2 - Exercise 3
+
+def connectedComponents(graph):
+    visV=[]
+    allComps=[]
+    #parse all vertices
+    for p in graph.parseKeys():
+        if p not in visV:
+            #vertex has been reached
+            visV.append(p)
+            comp=dfs(graph,p,visV)
+            #add edges to the component
+            for q in comp.parseKeys():
+                for v in comp.parseKeys():
+                    if graph.isEdge(q,v) and not comp.isEdge(v,q):
+                        comp.addEdge(q,v,graph.retdCosts(q, v))
+            allComps.append(comp)
+
+    return allComps
+
+
+def dfs(graph,start,visV):
+    #initialize component as graph
+    comp=DoubleListGraph(0)
+    #add start vertex to stack
+    stack=[start]
+    while stack:
+        #the next vertex we visit will be the top of the stack
+        v=stack[-1]
+        neigh=graph.retdOut(v)
+        done=True
+        for p in neigh:
+            if p not in visV:
+                #add to stack and visit neighbour
+                stack.append(p)
+                visV.append(p)
+                done=False
+                break
+        #all neighbours have been visited
+        if done:
+            #add vertex to the component
+            try:
+                comp.addVertex(stack[-1])
+            except:
+                pass
+            del stack[-1]
+    return comp

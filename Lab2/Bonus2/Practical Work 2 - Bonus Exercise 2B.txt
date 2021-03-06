@@ -1,0 +1,44 @@
+Practical Work 2 - Bonus Exercise 2B
+
+def biconnectedComponents(graph):
+    depth = [0] * graph.numberOfVertices()
+    lowpoint = [0] * graph.numberOfVertices()
+    stack=[]
+    bigStack=[]
+    for p in graph.parseKeys():
+        if not depth[p]:
+            depth[p]=1
+            dfs(graph,p,depth,lowpoint,stack,bigStack)
+    return bigStack
+
+def dfs(graph,p,depth,lowpoint,stack,bigStack):
+    lowpoint[p]=depth[p]
+    if p not in stack:
+        stack.append(p)
+
+    if p not in stack:
+        stack.append(p)
+    neigh=graph.retdOut(p)
+    for v in neigh:
+        if depth[v]:
+            lowpoint[p]=min(lowpoint[p],depth[v])
+        else:
+            depth[v]=depth[p]+1
+            dfs(graph,v,depth,lowpoint,stack,bigStack)
+            lowpoint[p]=min(lowpoint[p],lowpoint[v])
+            if lowpoint[v]>=depth[p]:
+                comp=DoubleListGraph(0)
+                x=-1
+                while(x!=v):
+                    x=stack.pop()
+                    if x not in comp.parseKeys():
+                        comp.addVertex(x)
+                if v not in comp.parseKeys():
+                    comp.addVertex(v)
+                if p not in comp.parseKeys():
+                    comp.addVertex(p)
+                for x in comp.parseKeys():
+                    for q in comp.parseKeys():
+                        if graph.isEdge(x,q) and not comp.isEdge(q,x):
+                            comp.addEdge(x,q, graph.retdCosts(x,q))
+                bigStack.append(comp)

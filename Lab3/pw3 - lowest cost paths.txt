@@ -1,0 +1,25 @@
+Lowest cost walks:
+
+-graph1k.txt:
+
+1-100:
+Cost of lowest cost path: 141
+Lowest cost path: 1->5->487->175->714->799->222->561->100
+
+100-1:
+Cost of lowest cost path: 196
+Lowest cost path: 100->259->229->641->538->854->1
+
+
+-graph10k.txt: 
+
+1-100:
+Cost of lowest cost path: 344
+Lowest cost path: 1->7317->460->6010->5295->4560->5513->8467->3517->99->9159->6840->5177->7133->288->100
+
+100-1:
+Cost of lowest cost path: 238
+Lowest cost path: 100->4442->3980->1974->407->4489->5162->2008->3631->2305->8336->1
+
+
+-graph100k.txt: MemoryError

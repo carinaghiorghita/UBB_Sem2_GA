@@ -1,0 +1,70 @@
+Practical Work 3 - Exercise 3
+ 
+    def lowestCostWalk(self,s,t,prev):
+        e=self.numberOfEdges()
+        v=self.numberOfVertices()
+        #d[x][k]=the cost of the lowest cost walk from s to x and of length at most k, where s is the starting vertex
+        d=[[math.inf for x in range(e+1)] for y in range(v)]
+        for i in range(e+1):
+            d[s][i]=0
+        #dynamically modify the matrix
+        for k in range(1,e+1):
+            for i in range(1,v):
+                #d[i][k]=min(d[i][k],min(d[j][k-1]+cost(j,i)), where j belongs to the set of inbound edges of i
+                d[i][k]=d[i][k-1]
+                for j in self.retdIn(i):
+                    if d[j][k-1]+self.retdCosts(j,i)<d[i][k]:
+                        d[i][k]=d[j][k-1]+self.retdCosts(j,i)
+                        #i is now the direct predecessor of j
+                        prev[i]=j
+        #check for negative cost cycles
+        for i in range(1,v):
+            mincost=d[i][e]
+            for j in self.retdIn(i):
+                if d[j][e] + self.retdCosts(j, i) < mincost:
+                    raise NegativeCycleError
+        #the lowest cost found
+        return d[t][e]
+
+
+Practical Work 3 - Bonus Exercise 1B
+
+    def nrOfLowCostWalks(self,s,t):
+        v = self.numberOfVertices()
+        #we initialise the minimum cost found so far with positive infinity
+        dist=[math.inf]*v
+        dist[s]=0
+        #nrWalks[i]=the number of walks found so far between s and i
+        nrWalks=[0]*v
+        nrWalks[s]=1
+        #prev[i]=the list of predecessors of i
+        prev=[[]for i in range(v)]
+        #relax edges repeatedly
+        for i in range(v-1):
+            changed=False
+            for edge in self.parseKeysCosts():
+                # check whether we can relax the edge
+                if dist[edge[1]]>dist[edge[0]]+self.retdCosts(edge[0], edge[1]):
+                    #update minimum length for edge[1]
+                    dist[edge[1]] = dist[edge[0]] + self.retdCosts(edge[0], edge[1])
+                    #the number of walks for edge[1] becomes the same as for edge[0]
+                    nrWalks[edge[1]]=nrWalks[edge[0]]
+                    #add edge[0] as a predecessor of edge[1]
+                    if edge[0] not in prev[edge[1]]:
+                        prev[edge[1]].append(edge[0])
+                    changed=True
+                #if we find another minimum cost walk
+                elif dist[edge[1]]==dist[edge[0]]+self.retdCosts(edge[0], edge[1]) and edge[0] not in prev[edge[1]]:
+                    #the number of walks for edge[0] is added to that of edge[1]
+                    nrWalks[edge[1]]+=nrWalks[edge[0]]
+                    #remove edge[1] as a predecessor for all the vertices, so we can later update the new number of walks of minimum cost
+                    prev[edge[1]].append(edge[0])
+                    for p in prev:
+                        if edge[1] in p:
+                            p.remove(edge[1])
+                    changed=True
+            # if no edge has been relaxed and no number of walks has been modified, we can stop the relaxation
+            if not changed:
+                break
+        #the number of minimum cost walks from s to t
+        return nrWalks[t]
